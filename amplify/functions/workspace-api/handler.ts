@@ -73,7 +73,10 @@ async function subscribed(sub: string, role: Profile['role']): Promise<boolean> 
         store?: string; entitlements?: { items?: Array<{ lookup_key?: string }> } }>; next_page?: string };
       if (body.items?.some(item => item.gives_access === true && item.environment === 'production'
         && item.store === 'app_store' && item.entitlements?.items?.some(ent => ent.lookup_key === role.toLowerCase()))) return true;
-      page = body.next_page;
+      // RevenueCat returns a relative next-page URL, not a cursor value.
+      page = body.next_page
+        ? new URL(body.next_page, url).searchParams.get('starting_after') ?? undefined
+        : undefined;
     } while (page);
   } catch { return false; }
   return false;
