@@ -1,0 +1,19 @@
+{
+  "name": "drum-buddy-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "deploy": "ampx pipeline-deploy --branch main --app-id $AMPLIFY_APP_ID"
+  },
+  "dependencies": {
+    "@aws-amplify/backend": "^1.25.1",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "aws-amplify": "^6.15.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.152",
+    "typescript": "^5.9.3"
+  }
+}
