@@ -4,7 +4,7 @@ backend:
     build:
       commands:
         - npm install --legacy-peer-deps --no-audit --no-fund --cache .npm --prefer-offline
-      - npx ampx pipeline-deploy --branch main --app-id dqxubwafnmvt3 --outputs-out-dir .
+        - npx ampx pipeline-deploy --branch main --app-id dqxubwafnmvt3 --outputs-out-dir .
 frontend:
   phases:
     build:
