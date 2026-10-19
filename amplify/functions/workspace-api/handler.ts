@@ -129,7 +129,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       if (await get('Profile', sub)) fail('Account type is already set.');
       if (args.role !== 'TEACHER' && args.role !== 'STUDENT') fail('Invalid account type.');
       const displayName = input(args.displayName, 'Name', 60);
-      await create('Profile', { id: sub, role: args.role, displayName });
+      await create('Profile', { id: sub, owner: sub, role: args.role, displayName });
       return { userId: sub, role: args.role, displayName, entitlementActive: false };
     }
     case 'updateDisplayName': {
@@ -140,7 +140,7 @@ export const handler = async (event: Event): Promise<unknown> => {
     }
     case 'createGroup': {
       await requireSubscription(sub, 'TEACHER');
-      const group = await create<Group>('Group', { id: randomUUID(), teacherId: sub,
+      const group = await create<Group>('Group', { id: randomUUID(), owner: sub, teacherId: sub,
         name: input(args.name, 'Group name', 80), inviteCode: inviteCode() });
       return groupView(group, sub);
     }
@@ -149,7 +149,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       const group = (await list<Group>('Group', { inviteCode: { eq: input(args.inviteCode, 'Code', 20).toUpperCase() } }))[0];
       if (!group) fail('Invite code not found.');
       if (!await get('Membership', `${group.id}#${sub}`)) await create('Membership',
-        { id: `${group.id}#${sub}`, groupId: group.id, studentId: sub });
+        { id: `${group.id}#${sub}`, owner: sub, groupId: group.id, studentId: sub });
       return groupView(group, sub);
     }
     case 'leaveGroup': {
@@ -185,7 +185,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       const codes = args.stepCodes;
       if (!Array.isArray(codes) || !codes.length || codes.length > 32
         || codes.some((code: string) => !['R', 'L', '-', 'R!', 'L!'].includes(code))) fail('Invalid stroke pattern.');
-      return warmUpView(await create<WarmUp>('WarmUp', { id: randomUUID(), groupId: group.id, teacherId: sub,
+      return warmUpView(await create<WarmUp>('WarmUp', { id: randomUUID(), owner: sub, groupId: group.id, teacherId: sub,
         title: input(args.title, 'Title', 100), instructions: String(args.instructions ?? '').slice(0, 500),
         stepCodes: codes, bpm: integer(args.bpm, 'BPM', 40, 280),
         durationSeconds: integer(args.durationSeconds, 'Duration', 30, 1800), active: true }));
@@ -228,7 +228,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       const recent = await list<Practice>('Practice', { userId: { eq: sub } });
       if (recent.some(value => value.warmUpId === warmUpId && value.exerciseId === exerciseId
         && Date.now() - Date.parse(value.completedAt) < 30_000)) fail('Practice already saved.');
-      return create('Practice', { id: randomUUID(), userId: sub, groupId, warmUpId, exerciseId,
+      return create('Practice', { id: randomUUID(), owner: sub, userId: sub, groupId, warmUpId, exerciseId,
         bpm: args.bpm == null ? null : integer(args.bpm, 'BPM', 40, 280),
         durationSeconds, earnedXp: warmUpId ? 25 : 50, completedAt: new Date().toISOString() });
     }

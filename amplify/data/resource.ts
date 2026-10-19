@@ -8,28 +8,32 @@ const schema = a.schema({
   // reads and writes go through operations below, where membership is checked.
   Profile: a.model({
     id: a.id().required(),
+    owner: a.string().required(),
     role: a.ref('Role').required(),
     displayName: a.string().required(),
-  }),
+  }).authorization(allow => [allow.owner()]),
   Group: a.model({
     id: a.id().required(),
+    owner: a.string().required(),
     teacherId: a.id().required(),
     name: a.string().required(),
     inviteCode: a.string().required(),
   }).secondaryIndexes(index => [
     index('teacherId'),
     index('inviteCode'),
-  ]),
+  ]).authorization(allow => [allow.owner()]),
   Membership: a.model({
     id: a.id().required(),
+    owner: a.string().required(),
     groupId: a.id().required(),
     studentId: a.id().required(),
   }).secondaryIndexes(index => [
     index('groupId'),
     index('studentId'),
-  ]),
+  ]).authorization(allow => [allow.owner()]),
   WarmUp: a.model({
     id: a.id().required(),
+    owner: a.string().required(),
     groupId: a.id().required(),
     teacherId: a.id().required(),
     title: a.string().required(),
@@ -38,9 +42,10 @@ const schema = a.schema({
     bpm: a.integer().required(),
     durationSeconds: a.integer().required(),
     active: a.boolean().required(),
-  }).secondaryIndexes(index => [index('groupId')]),
+  }).secondaryIndexes(index => [index('groupId')]).authorization(allow => [allow.owner()]),
   Practice: a.model({
     id: a.id().required(),
+    owner: a.string().required(),
     userId: a.id().required(),
     groupId: a.id(),
     warmUpId: a.id(),
@@ -52,7 +57,7 @@ const schema = a.schema({
   }).secondaryIndexes(index => [
     index('userId').sortKeys(['completedAt']),
     index('groupId').sortKeys(['completedAt']),
-  ]),
+  ]).authorization(allow => [allow.owner()]),
 
   ProfileView: a.customType({
     userId: a.id().required(), role: a.ref('Role').required(),
