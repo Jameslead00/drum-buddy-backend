@@ -101,7 +101,7 @@ const schema = a.schema({
   updateDisplayName: a.mutation().arguments({ displayName: a.string().required() })
     .returns(a.ref('ProfileView').required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
-  createGroup: a.mutation().arguments({ name: a.string().required() })
+  workspaceCreateGroup: a.mutation().arguments({ name: a.string().required() })
     .returns(a.ref('GroupView').required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
   joinGroup: a.mutation().arguments({ inviteCode: a.string().required() })
@@ -115,19 +115,19 @@ const schema = a.schema({
   listMembers: a.query().arguments({ groupId: a.id().required() })
     .returns(a.ref('ProfileView').array().required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
-  createWarmUp: a.mutation().arguments({
+  workspaceCreateWarmUp: a.mutation().arguments({
     groupId: a.id().required(), title: a.string().required(),
     instructions: a.string(), stepCodes: a.string().required().array().required(),
     bpm: a.integer().required(), durationSeconds: a.integer().required(),
   }).returns(a.ref('WarmUpView').required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
-  updateWarmUp: a.mutation().arguments({
+  workspaceUpdateWarmUp: a.mutation().arguments({
     warmUpId: a.id().required(), title: a.string(), instructions: a.string(),
     stepCodes: a.string().array(), bpm: a.integer(), durationSeconds: a.integer(),
     active: a.boolean(),
   }).returns(a.ref('WarmUpView').required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
-  listWarmUps: a.query().arguments({ groupId: a.id().required() })
+  workspaceListWarmUps: a.query().arguments({ groupId: a.id().required() })
     .returns(a.ref('WarmUpView').array().required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
   recordPractice: a.mutation().arguments({

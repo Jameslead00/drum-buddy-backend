@@ -138,7 +138,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       await update('Profile', { id: sub, displayName });
       return { userId: sub, role: profile.role, displayName, entitlementActive: await subscribed(sub, profile.role) };
     }
-    case 'createGroup': {
+    case 'workspaceCreateGroup': {
       await requireSubscription(sub, 'TEACHER');
       const group = await create<Group>('Group', { id: randomUUID(), owner: sub, teacherId: sub,
         name: input(args.name, 'Group name', 80), inviteCode: inviteCode() });
@@ -174,7 +174,7 @@ export const handler = async (event: Event): Promise<unknown> => {
           userId: member.studentId, role: value.role, displayName: value.displayName,
           entitlementActive: await subscribed(member.studentId, value.role) }; }));
     }
-    case 'createWarmUp': {
+    case 'workspaceCreateWarmUp': {
       await requireSubscription(sub, 'TEACHER');
       const group = await access(input(args.groupId, 'Group ID'), sub);
       if (group.teacherId !== sub) fail('Teacher access required.');
@@ -186,7 +186,7 @@ export const handler = async (event: Event): Promise<unknown> => {
         stepCodes: codes, bpm: integer(args.bpm, 'BPM', 40, 280),
         durationSeconds: integer(args.durationSeconds, 'Duration', 30, 1800), active: true }));
     }
-    case 'updateWarmUp': {
+    case 'workspaceUpdateWarmUp': {
       await requireSubscription(sub, 'TEACHER');
       const value = await get<WarmUp>('WarmUp', input(args.warmUpId, 'Warm-up ID'));
       if (!value || value.teacherId !== sub) fail('Warm-up not found.');
@@ -203,7 +203,7 @@ export const handler = async (event: Event): Promise<unknown> => {
       if (args.active != null) patch.active = Boolean(args.active);
       return warmUpView(await update<WarmUp>('WarmUp', patch));
     }
-    case 'listWarmUps': {
+    case 'workspaceListWarmUps': {
       await requireSubscription(sub);
       const group = await access(input(args.groupId, 'Group ID'), sub);
       return (await list<WarmUp>('WarmUp', { groupId: { eq: group.id } }))
