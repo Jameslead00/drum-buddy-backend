@@ -165,10 +165,6 @@ export const handler = async (event: Event): Promise<unknown> => {
           .map(member => get<Group>('Group', member.groupId)));
       return Promise.all(groups.filter((group): group is Group => !!group).map(group => groupView(group, sub)));
     }
-    case 'getGroup': {
-      await requireSubscription(sub);
-      return groupView(await access(input(args.groupId, 'Group ID'), sub), sub);
-    }
     case 'listMembers': {
       await requireSubscription(sub, 'TEACHER');
       const group = await access(input(args.groupId, 'Group ID'), sub);

@@ -112,9 +112,6 @@ const schema = a.schema({
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
   myGroups: a.query().returns(a.ref('GroupView').array().required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
-  getGroup: a.query().arguments({ groupId: a.id().required() })
-    .returns(a.ref('GroupView'))
-    .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
   listMembers: a.query().arguments({ groupId: a.id().required() })
     .returns(a.ref('ProfileView').array().required())
     .authorization(allow => [allow.authenticated()]).handler(a.handler.function(workspaceApi)),
